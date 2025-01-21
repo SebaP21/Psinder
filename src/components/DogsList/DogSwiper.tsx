@@ -23,7 +23,13 @@ interface Dog {
 const DogTinder = () => {
 	const [dogs, setDogs] = useState<Dog[]>([]);
 	const [imageIndices, setImageIndices] = useState<number[]>([]);
+	const [activeSwipe, setActiveSwipe] = useState<{
+		index: number;
+		direction: "left" | "right" | null;
+	} | null>(null);
 	const cardRefs = useRef<React.RefObject<TinderCardInstance>[]>([]);
+
+	const [showDetails, setShowDetails] = useState(false);
 
 	// Pobranie danych z API
 	useEffect(() => {
@@ -44,13 +50,14 @@ const DogTinder = () => {
 	}, []);
 
 	// Obsługa zdarzenia przesuwania
-	const swiped = (direction: string, name: string, index: number) => {
+	const swiped = (direction: "left" | "right", name: string, index: number) => {
 		console.log(`Swiped ${direction} on ${name}`);
 
 		// Opóźnione usuwanie elementu
 		setTimeout(() => {
 			setDogs((prev) => prev.filter((_, i) => i !== index));
-		}, 300); // Opóźnienie 300 ms, aby animacja mogła się wykonać
+			setActiveSwipe(null); // Resetowanie obramowania po zakończeniu swipe
+		}, 300);
 	};
 
 	const outOfFrame = (name: string) => {
@@ -66,7 +73,8 @@ const DogTinder = () => {
 	// Funkcja programowego przesunięcia karty
 	const swipe = async (direction: "left" | "right") => {
 		if (dogs.length > 0) {
-			const activeIndex = dogs.length - 1; // Ostatnia karta
+			const activeIndex = dogs.length - 1;
+			setActiveSwipe({ index: activeIndex, direction }); // Ustawianie obramowania
 			const activeCardRef = cardRefs.current[activeIndex]?.current;
 			if (activeCardRef) {
 				await activeCardRef.swipe(direction);
@@ -78,20 +86,40 @@ const DogTinder = () => {
 	const handleYesClick = () => swipe("right");
 	const handleNoClick = () => swipe("left");
 
+	//Funkcja dla showDetails
+
+	const detailsClick = () => {
+		setShowDetails((prev) => !prev);
+	};
+
 	return (
 		<section className='w-full bg-zinc-700 min-h-[100svh] flex flex-col overflow-hidden'>
 			<TopMenuHome />
+
 			<div className='relative w-full min-h-[84svh]'>
 				{dogs.map((dog, index) => (
 					<TinderCard
 						ref={cardRefs.current[index]}
-						key={index} // Klucz oparty na indeksie
-						onSwipe={(dir) => swiped(dir, dog.name, index)}
+						key={index}
+						onSwipe={(dir) => swiped(dir as "left" | "right", dog.name, index)}
 						onCardLeftScreen={() => outOfFrame(dog.name)}
 						preventSwipe={["up", "down"]}
+						onSwipeStart={(dir) => {
+							setActiveSwipe({
+								index,
+								direction: dir === "right" ? "right" : "left",
+							});
+						}}
 					>
 						<div
-							className={`absolute w-full h-[70svh] bg-cover shadow-lg flex flex-col transition-transform duration-500 justify-between ease-in-out rounded-lg`}
+							className={`absolute w-full bg-cover shadow-lg flex flex-col transition-all justify-between ease-in-out rounded-lg ${
+								showDetails ? "h-[50svh]" : "h-[70svh]"
+							}  ${
+								activeSwipe?.index === index &&
+								(activeSwipe.direction === "right"
+									? "border-[20px] border-green-700 "
+									: "border-[20px] border-red-800")
+							}`}
 							style={{
 								backgroundImage: `url(${dog.images[imageIndices[index]]})`,
 							}}
@@ -119,12 +147,15 @@ const DogTinder = () => {
 									</div>
 									<h4>5 km</h4>
 								</div>
-								<div className='max-w-[30px] transition-all hover:scale-110'>
+								<button
+									className='max-w-[30px] transition-all hover:scale-110'
+									onClick={detailsClick}
+								>
 									<img
 										src={dogDetails}
 										alt=''
 									/>
-								</div>
+								</button>
 							</div>
 						</div>
 					</TinderCard>
@@ -132,14 +163,20 @@ const DogTinder = () => {
 
 				{/* ChooseMenu */}
 				<div className='absolute w-full h-[17svh] bg-gradient-to-b from-transparent to-black flex justify-evenly p-2 bottom-0'>
-					<button className='flex items-center justify-center' onClick={handleNoClick}>
+					<button
+						className='flex items-center justify-center'
+						onClick={handleNoClick}
+					>
 						<img
 							src={nope}
 							alt=''
 							className='h-[80%] bg-zinc-900 p-2 rounded-full -rotate-12 transition-all hover:-rotate-45 hover:scale-110'
 						/>
 					</button>
-					<button className='flex items-center justify-center' onClick={handleYesClick}>
+					<button
+						className='flex items-center justify-center'
+						onClick={handleYesClick}
+					>
 						<img
 							src={yes}
 							alt=''
