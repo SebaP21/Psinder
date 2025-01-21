@@ -1,35 +1,65 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import {
+	BrowserRouter as Router,
+	Routes,
+	Route,
+	Navigate,
+} from "react-router-dom";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(100)
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+// import Home from "./pages/HomeTemplate";
+// import DogDetailsTemplate from "./pages/DogDetailsTemplate";
+// import ActivityTemplate from "./pages/ActivityTemplate";
+// import NewPairAndMessageTemplate from "./pages/NewPairTemplate";
+// import Home from "./pages/HomeTemplate";
+// import AllPairsTemplate from "./pages/AllPairsTemplate";
+// import DogList from "./components/DogsList/DogList";
+import DogSwiper from "./components/DogsList/DogSwiper";
 
-  return (
-    <>
-      <div className='flex min-w-[1500px]'>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="text-4xl text-red-800 ">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+// Komponent ochrony trasy
+const ProtectedRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
+	const { token } = useAuth(); // Sprawdzamy, czy użytkownik ma token
 
-export default App
+	// Jeśli użytkownik nie jest zalogowany, przekierowujemy na stronę logowania
+	if (!token) {
+		return <Navigate to='/login' />;
+	}
+
+	return children;
+};
+
+const App: React.FC = () => {
+	return (
+		<AuthProvider>
+			<Router>
+				<Routes>
+					<Route
+						path='/'
+						element={<Login />}
+					/>
+					<Route
+						path='/login'
+						element={<Login />}
+					/>
+					<Route
+						path='/register'
+						element={<Register />}
+					/>
+					<Route
+						path='/home'
+						element={
+							<ProtectedRoute>
+								<DogSwiper/>
+							</ProtectedRoute>
+						}
+					/>
+				</Routes>
+			</Router>
+		</AuthProvider>
+	);
+};
+
+export default App;

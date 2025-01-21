@@ -1,0 +1,30 @@
+src/
+│
+├── assets/               # Statyczne pliki (obrazy, ikony itp.)
+├── components/           # Komponenty wielokrotnego użytku
+│   ├── Button.tsx        # Przykład komponentu
+│   ├── Navbar.tsx
+│   └── ProfileCard.tsx   # Karta profilu użytkownika
+│
+├── pages/                # Strony aplikacji
+│   ├── Home.tsx          # Strona główna z przeglądaniem psów
+│   ├── Profile.tsx       # Strona z profilem użytkownika
+│   ├── Messages.tsx      # Strona wiadomości
+│   └── Matches.tsx       # Strona sparowanych użytkowników
+│
+├── services/             # Serwisy do obsługi API
+│   ├── dogService.ts     # Komunikacja z API psów
+│   ├── userService.ts    # Komunikacja z API użytkowników
+│   └── messageService.ts # Komunikacja z API wiadomości
+│
+├── store/                # Stan aplikacji (np. Redux lub React Context)
+│   ├── userStore.ts      # Stan użytkownika
+│   └── dogStore.ts       # Stan psów
+│
+├── utils/                # Narzędzia i pomocnicze funkcje
+│   ├── apiUtils.ts       # Funkcje do obsługi zapytań API
+│   └── validation.ts     # Walidacja danych
+│
+├── App.tsx               # Główny komponent aplikacji
+├── index.tsx             # Plik wejściowy aplikacji
+└── tailwind.config.ts    # Konfiguracja Tailwind CSS
