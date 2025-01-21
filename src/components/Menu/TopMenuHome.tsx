@@ -1,10 +1,16 @@
 import logo from "../../assets/icons/dog.png";
 import activity from "../../assets/icons/bell.png";
 import settings from "../../assets/icons/setting.png";
+import { FC } from "react";
 
-const TopMenuHome = () => {
+type TopMenuHomeProps = {
+	showDetails:boolean
+}
+
+
+const TopMenuHome:FC<TopMenuHomeProps> = ({showDetails}) => {
 	return (
-		<div className='w-full h-[8svh] bg-zinc-900 flex justify-between px-6'>
+		<div className={`${showDetails && "hidden"} w-full h-[8svh] bg-zinc-900 flex justify-between px-6`}>
 			<div className='w-[30%] h-[8svh] flex'>
 				<button className='flex items-center justify-center'>
 					<img

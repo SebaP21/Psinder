@@ -1,9 +1,9 @@
-import TopMenuHome from "../components/Menu/TopMenuHome";
+// import TopMenuHome from "../components/Menu/TopMenuHome";
 
 const NewPairAndMessageTemplate = () => {
 	return (
 		<section className='w-full bg-zinc-900 min-h-[100svh]'>
-			<TopMenuHome />
+			{/* <TopMenuHome /> */}
 			{/* NewPairs */}
 			<div className='w-full flex flex-col gap-4'>
 				<h3 className='pt-6 pl-2 font-bold text-white'>Nowe Pary</h3>
